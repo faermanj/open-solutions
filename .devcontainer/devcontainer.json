@@ -15,7 +15,7 @@
       "ghcr.io/devcontainers/features/aws-cli:1": {},
       "ghcr.io/dhoeric/features/google-cloud-cli:1": {}
     },
-    "postCreateCommand": "postCreateCommand.sh",
+    "postCreateCommand": "pwd && ./.devcontainer/postCreateCommand.sh",
     "customizations": {
       "vscode": {
         "settings": {},
