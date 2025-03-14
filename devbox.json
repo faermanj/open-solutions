@@ -5,9 +5,7 @@
     "bc@latest"
   ],
   "shell": {
-    "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null"
-    ],
+    "init_hook": [ "./scripts/devbox-init-hook.sh"],
     "scripts": {
       "test": [
         "echo \"Error: no test specified\" && exit 1"
