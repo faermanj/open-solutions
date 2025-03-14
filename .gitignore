@@ -1,3 +1,5 @@
 .envrc
 .devbox
 tmp
+.vscode
+.idea

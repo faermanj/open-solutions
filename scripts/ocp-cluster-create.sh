@@ -6,21 +6,24 @@ export CASE_NAME=${CASE_NAME:-"ocp-lab"}
 export DATA_DIR="$REPO_DIR/tmp"
 
 export AWS_REGION=${AWS_REGION:-"us-east-1"}
-export CLUSTER_DIR="$DATA_DIR/$CLUSTER_NAME"
 export SSH_KEY=$(cat $HOME/.ssh/id_rsa.pub)
 export PULL_SECRET=${PULL_SECRET:-$(cat "$HOME/.openshift/pull-secret-latest.json")}
 
 export OCP_CONFIG=${OCP_CONFIG:-"default"}
 export CLUSTER_NAME="${CLUSTER_NAME:-"$CASE_NAME-$(date +%H%M)-$OCP_CONFIG"}"
-export AWS_CP_INSTANCE_TYPE=${AWS_CP_INSTANCE_TYPE:-"r7i.xlarge"}
+export CLUSTER_DIR="$DATA_DIR/$CLUSTER_NAME"
+export AWS_CP_INSTANCE_TYPE=${AWS_CP_INSTANCE_TYPE:-"r7a.2xlarge"}
 export AWS_CP_INSTANCE_ARCH=${AWS_CP_INSTANCE_ARCH:-"amd64"}
-export AWS_WK_INSTANCE_TYPE=${AWS_CP_INSTANCE_TYPE:-"r7i.xlarge"}
+export AWS_WK_INSTANCE_TYPE=${AWS_CP_INSTANCE_TYPE:-"r7a.2xlarge"}
 export AWS_WK_INSTANCE_ARCH=${AWS_CP_INSTANCE_ARCH:-"amd64"}
 
 
 CONFIG_DIR="$REPO_DIR/ocp/$OCP_CONFIG"
 
-echo "Generating cluster [$CLUSTER_NAME] configuration [$OCP_CONFIG]"
+echo "Generating cluster configuration [$OCP_CONFIG]"
+echo "  CLUSTER_NAME[$CLUSTER_NAME]"
+echo "  CLUSTER_DIR[$CLUSTER_DIR]"
+
 mkdir -p "$CLUSTER_DIR/log"
 
 envsubst < $CONFIG_DIR/install-config.env.yaml > $CLUSTER_DIR/install-config.yaml
@@ -34,8 +37,10 @@ echo "Auto-destroy script [$CLUSTER_DIR/destroy.sh]"
 echo "openshift-install destroy cluster --dir=$CLUSTER_DIR" > $CLUSTER_DIR/destroy.sh
 chmod +x $CLUSTER_DIR/destroy.sh
 
-echo "Creating cluster [$CLUSTER_NAME]..." | tee $CLUSTER_DIR/log/cluster-name.log.txt
+echo "Creating cluster..." | tee $CLUSTER_DIR/log/cluster-name.log.txt
 aws sts get-caller-identity | tee $CLUSTER_DIR/log/aws-identity.log.txt
+echo "  CLUSTER_NAME[$CLUSTER_NAME]"
+echo "  CLUSTER_DIR[$CLUSTER_DIR]"
 sleep 15
 
 start_time=$(date +%s)

@@ -5,6 +5,7 @@ SRC_DIR=$(dirname $DIR)
 # Define variables
 NAMESPACE="openshift-gitops"
 CONFIG_FOLDER="SRC_DIR/gitops/"
+REPO_URL_HTTP="https://github.com/faermanj/go-practice"
 
 # Create the namespace for OpenShift GitOps
 echo "Creating namespace $NAMESPACE..."
