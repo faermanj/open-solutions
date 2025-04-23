@@ -2,14 +2,23 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 REPO_DIR=$(dirname $DIR)
 
+# If there is an .envrc, source it (don't trust direnv)
+if [ -f "$REPO_DIR/.envrc" ]; then
+    source "$REPO_DIR/.envrc"
+fi
+
+# Expected settings
+export OCP_CONFIG=${OCP_CONFIG:-"default"}
+
+# Ergonomic settings
 export CASE_NAME=${CASE_NAME:-"ocp-lab"}
-export DATA_DIR="$REPO_DIR/tmp"
+export DATE_STAMP=$(date +%Y%m%d)
+export DATA_DIR="$REPO_DIR/tmp/$DATE_STAMP"
 
 export AWS_REGION=${AWS_REGION:-"us-east-1"}
 export SSH_KEY=$(cat $HOME/.ssh/id_rsa.pub)
 export PULL_SECRET=${PULL_SECRET:-$(cat "$HOME/.openshift/pull-secret-latest.json")}
 
-export OCP_CONFIG=${OCP_CONFIG:-"default"}
 export CLUSTER_NAME="${CLUSTER_NAME:-"$CASE_NAME-$(date +%H%M)-$OCP_CONFIG"}"
 export CLUSTER_DIR="$DATA_DIR/$CLUSTER_NAME"
 export AWS_CP_INSTANCE_TYPE=${AWS_CP_INSTANCE_TYPE:-"r7a.2xlarge"}
@@ -67,8 +76,9 @@ echo "Creation time: $execution_time_minutes minutes"
 
 # replace default kube config
 # cp $CLUSTER_DIR/auth/kubeconfig $KUBECONFIG $HOME/.kube/config
-echo "export KUBECONFIG=$CLUSTER_DIR/auth/kubeconfig" 
+echo "Setting new cluster as system default" 
 export KUBECONFIG=$CLUSTER_DIR/auth/kubeconfig
+ln -sf $HOME/.kube/config $KUBECONFIG 
 
 # Check status
 $CLUSTER_DIR/bin/oc status | tee $CLUSTER_DIR/log/oc-status.log.txt
