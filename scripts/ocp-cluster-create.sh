@@ -1,5 +1,9 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+if [ -n "$ZSH_VERSION" ]; then
+    DIR="$( cd "$( dirname "${(%):-%N}" )" >/dev/null 2>&1 && pwd )"
+else
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+fi
 REPO_DIR=$(dirname $DIR)
 
 # If there is an .envrc, source it (don't trust direnv)
@@ -27,7 +31,7 @@ export AWS_WK_INSTANCE_TYPE=${AWS_CP_INSTANCE_TYPE:-"r7a.2xlarge"}
 export AWS_WK_INSTANCE_ARCH=${AWS_CP_INSTANCE_ARCH:-"amd64"}
 
 
-CONFIG_DIR="$REPO_DIR/ocp/$OCP_CONFIG"
+CONFIG_DIR="$REPO_DIR/config/openshift/$OCP_CONFIG"
 
 echo "Generating cluster configuration [$OCP_CONFIG]"
 echo "  CLUSTER_NAME[$CLUSTER_NAME]"
@@ -82,6 +86,9 @@ ln -sf $HOME/.kube/config $KUBECONFIG
 
 # Check status
 $CLUSTER_DIR/bin/oc status | tee $CLUSTER_DIR/log/oc-status.log.txt
+
+# Replace "latest" link
+ln -sf "$CLUSTER_DIR" "$REPO_DIR/tmp/latest"
 
 # echo "Executing test..."
 # sleep 15
